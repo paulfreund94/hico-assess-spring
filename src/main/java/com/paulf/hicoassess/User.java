@@ -4,21 +4,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.paulf.hicoassess.enums.Color;
+import com.paulf.hicoassess.enums.Gender;
+import com.paulf.hicoassess.enums.Salutation;
+import com.paulf.hicoassess.validators.UserFieldsValid;
+
 import javax.validation.constraints.NotNull;
 
-enum Salutation {
-  DR, MR, MS, MRS, MX;
-}
-
-enum Gender {
-  M, F, U
-}
-
-enum Color {
-  GREEN, BLUE, RED, DEFAULT;
-}
-
 @Document(collection = "users")
+@UserFieldsValid
 public class User {
 
   @Id
@@ -47,8 +41,6 @@ public class User {
   }
 
   public void setFirstName(String firstName) throws Exception {
-    if (!isAlphabetical(firstName))
-      throw new Exception("Only alphabetical names.");
     this.firstName = firstName;
   }
 
@@ -57,8 +49,6 @@ public class User {
   }
 
   public void setLastName(String lastName) throws Exception {
-    if (!isAlphabetical(lastName))
-      throw new Exception("Only alphabetical names.");
     this.lastName = lastName;
   }
 
@@ -82,9 +72,7 @@ public class User {
     return salutation;
   }
 
-  public void setSalution(Salutation salutation) throws Exception {
-    if (invalidGenderAndSalutation(gender, salutation))
-      throw new Exception("Salution for gender!");
+  public void setSalution(Salutation salutation) {
     this.salutation = salutation;
   }
 
@@ -92,9 +80,7 @@ public class User {
     return gender;
   }
 
-  public void setGender(Gender gender) throws Exception {
-    if (invalidGenderAndSalutation(gender, salutation))
-      throw new Exception("Salution for gender!");
+  public void setGender(Gender gender) {
     this.gender = gender;
   }
 
@@ -106,23 +92,4 @@ public class User {
     this.color = color;
   }
 
-  private boolean invalidGenderAndSalutation(Gender gender, Salutation salutation) {
-    return gender == Gender.M && salutation != Salutation.MR
-        || gender == Gender.F && salutation != Salutation.MS && salutation != Salutation.MRS
-        || gender == Gender.U && salutation != Salutation.MX;
-  }
-
-  private boolean isAlphabetical(String s) {
-    if (s == null) {
-      return false;
-    }
-
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (!(c >= 'A' && c <= 'Z') && !(c >= 'a' && c <= 'z') && c != ' ') {
-        return false;
-      }
-    }
-    return true;
-  }
 }
